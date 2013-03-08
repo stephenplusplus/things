@@ -48,4 +48,4 @@ myApp.route('/', function(User) {
 myApp.goTo('/');
 ```
 
-For a more elaborate example, check out `app.'s` in this repo.
+For a more elaborate example, check out `app.js` in this repo.

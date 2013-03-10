@@ -13,7 +13,7 @@
         return;
 
       return root.jQuery
-        ? root.jQuery(context).find
+        ? root.jQuery(context).find.bind(root.jQuery(context))
         : context.querySelectorAll.bind(context);
     };
 
@@ -172,8 +172,6 @@
       var route = function(route, value) {
         registerDependency(module, 'route', route, value);
 
-        findRouteElements(module, route);
-
         return module;
       };
 
@@ -190,6 +188,7 @@
       };
 
       var goTo = function(route) {
+        findRouteElements(module, route);
         invokeDependency(module, route, 'route');
 
         return module;

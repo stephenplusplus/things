@@ -62,33 +62,6 @@ app.service('Feature', function(root) {
   this.localStorage = root.localStorage;
 });
 
-// You can also declare a "thing". A function, an array, anything.
-app.thing('root', window);
-
-app.thing('$', function() {
-  var forEach = Array.prototype.forEach;
-
-  var matches = [];
-
-  var api = {
-    html: function(newString) {
-      forEach.call(matches, function(match) {
-        match.innerHTML = newString;
-      });
-    }
-  };
-
-  return function(str) {
-    matches = document.querySelectorAll(str);
-
-    return api;
-  }
-});
-
-app.service('goTo', function() {
-  return app.goTo;
-});
-
 app.thing('States', [
   'Alabama',
   'Alaska',
@@ -143,18 +116,17 @@ app.thing('States', [
 ]);
 
 // A "route" is like a "page" of your app.
-app.route('/', function(User, goTo, $) {
-  if (User.isLoggedIn())
-    goTo('/usa');
-  else
-    $('body').html('Ha! You\'re not logged in.');
+app.route('/', function(User, eL) {
+  if (!User.isLoggedIn()) {
+    eL.html('Ha! You\'re not logged in.');
+  }
 });
 
-app.route('/login', function(root, User, goTo, $) {
+app.route('/login', function(User, eL) {
   User.logIn('stephen');
 
   if (User.isLoggedIn()) {
-    $('body').html('Hey! Thanks for logging in, Stephen! You\'ll be re-directed momentarily.');
+    eL.html('Hey! Thanks for logging in, Stephen! You\'ll be re-directed momentarily.');
   }
 });
 
@@ -166,11 +138,12 @@ app.route('/logout', function(User, goTo) {
   }
 });
 
-app.route('/usa', function($, States) {
-  $('body').html(States.join(', '));
+app.route('/usa', function(eL, States) {
+  eL.html(States.join(', '));
 });
 
 app.boots(function(root, goTo) {
+  goTo('/logout');
   goTo('/');
 
   root.setTimeout(function() {
@@ -178,10 +151,6 @@ app.boots(function(root, goTo) {
   }, 2000);
 
   root.setTimeout(function() {
-    goTo('/');
+    goTo('/usa');
   }, 4000);
-
-  root.setTimeout(function() {
-    goTo('/logout');
-  }, 6000);
 });

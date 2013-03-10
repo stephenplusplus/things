@@ -5,9 +5,77 @@
     , isFunction = function(thing) { return is(thing, 'function'); }
     , isString = function(thing) { return is(thing, 'string'); };
 
+  var eL = (function() {
+    var forEach = Array.prototype.forEach
+      , finder = root.jQuery || root.document.querySelectorAll.bind(document);
+
+    var find = function(context) {
+      if (isUndefined(context))
+        return;
+
+      return root.jQuery
+        ? finder(context).find
+        : context.querySelectorAll.bind(context);
+    };
+
+    return function() {
+      var api = {
+        matches: null,
+
+        find: function(element) {
+          var context = find(api.matches[0])
+            , matched;
+
+          if (isFunction(context))
+            matched = context(element);
+
+          if (isDefined(matched) && isDefined(matched[0]))
+            api.matches = matched;
+
+          return api;
+        },
+
+        html: function(newString) {
+          if (isString(newString))
+            forEach.call(api.matches, function(match) {
+              if (isString(newString))
+                return match.innerHTML = newString;
+            });
+
+          if (isUndefined(newString))
+            return api.matches[0].innerHTML;
+        }
+      };
+
+      api.matches = find(root.document.body)(arguments[0]);
+
+      return api;
+    }
+  })();
+
   root.things = (function() {
     var allOfTheThings = {}
       , dependencyTypes = ['route', 'service', 'thing'];
+
+    var getActiveRoute = function(module) {
+      return module.__activeRoute;
+    };
+
+    var getIncomingRoute = function(module) {
+      return module.__incomingRoute;
+    };
+
+    var findRouteElements = function(module, route) {
+      var dataroute = eL('[data-route="'+ route +'"]')
+        , datael = dataroute.find('[data-eL]');
+
+      module.route[route].__dataroute = dataroute;
+      module.route[route].__datael = datael.matches[0] ? datael : dataroute;
+    };
+
+    var getElForRoute = function(module, route) {
+      return module.route[route].__datael;
+    };
 
     var registerDependency = function(module, type, name, value) {
       var dependency = module[type][name] = value;
@@ -55,8 +123,16 @@
     var invokeDependency = function(module, name, type) {
       var value = requestDependency(module, name, type).dependency
         , dependencies = value? value.__dependencies : []
+        , route = type === 'route'
+        , thing = type === 'thing'
         , service = type === 'service'
         , invoked = service && value.__invoked;
+
+      if (route)
+        module.__incomingRoute = name;
+
+      if (module.__incomingRoute !== module.__activeRoute && name === 'eL')
+        value = getElForRoute(module, module.__incomingRoute);
 
       theInvoking: {
         if (isFunction(value)) {
@@ -78,11 +154,16 @@
         }
       }
 
+      if (route)
+        module.__activeRoute = name;
+
       return value;
     };
 
     var things = function(module) {
       module = allOfTheThings[module] = {
+        __incomingRoute: null,
+        __activeRoute: null,
         route: {},
         service: {},
         thing: {},
@@ -91,6 +172,8 @@
 
       var route = function(route, value) {
         registerDependency(module, 'route', route, value);
+
+        findRouteElements(module, route);
 
         return module;
       };
@@ -118,6 +201,15 @@
 
         return module;
       };
+
+      // register default dependencies.
+      registerDependency(module, 'thing', 'root', window);
+
+      registerDependency(module, 'service', 'goTo', function() {
+        return goTo;
+      });
+
+      registerDependency(module, 'thing', 'eL', eL);
 
       root.onload = function() {
         for (var bootFn in module.boot)

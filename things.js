@@ -6,15 +6,14 @@
     , isString = function(thing) { return is(thing, 'string'); };
 
   var eL = (function() {
-    var forEach = Array.prototype.forEach
-      , finder = root.jQuery || root.document.querySelectorAll.bind(document);
+    var forEach = Array.prototype.forEach;
 
     var find = function(context) {
       if (isUndefined(context))
         return;
 
       return root.jQuery
-        ? finder(context).find
+        ? root.jQuery(context).find
         : context.querySelectorAll.bind(context);
     };
 

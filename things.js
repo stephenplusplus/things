@@ -54,6 +54,7 @@
 
   root.things = (function() {
     var allOfTheThings = {}
+      , allOfTheThingsApis = {}
       , dependencyTypes = ['route', 'service', 'thing'];
 
     var getActiveRoute = function(module) {
@@ -123,14 +124,14 @@
       var value = requestDependency(module, name, type).dependency
         , dependencies = value? value.__dependencies : []
         , route = type === 'route'
-        , thing = type === 'thing'
         , service = type === 'service'
-        , invoked = service && value.__invoked;
+        , invoked = service && value.__invoked
+        , thing = type === 'thing';
 
       if (route)
         module.__incomingRoute = name;
 
-      if (module.__incomingRoute !== module.__activeRoute && name === 'eL')
+      if (name === 'eL' && module.__incomingRoute !== module.__activeRoute)
         value = getElForRoute(module, module.__incomingRoute);
 
       theInvoking: {
@@ -143,7 +144,12 @@
             invokeDependency(module, dependencies[1], requestDependency(module, dependencies[1]).dependencyType),
             invokeDependency(module, dependencies[2], requestDependency(module, dependencies[2]).dependencyType),
             invokeDependency(module, dependencies[3], requestDependency(module, dependencies[3]).dependencyType),
-            invokeDependency(module, dependencies[4], requestDependency(module, dependencies[4]).dependencyType)
+            invokeDependency(module, dependencies[4], requestDependency(module, dependencies[4]).dependencyType),
+            invokeDependency(module, dependencies[5], requestDependency(module, dependencies[5]).dependencyType),
+            invokeDependency(module, dependencies[6], requestDependency(module, dependencies[6]).dependencyType),
+            invokeDependency(module, dependencies[7], requestDependency(module, dependencies[7]).dependencyType),
+            invokeDependency(module, dependencies[8], requestDependency(module, dependencies[8]).dependencyType),
+            invokeDependency(module, dependencies[9], requestDependency(module, dependencies[9]).dependencyType)
           );
 
           if (service) {
@@ -159,8 +165,13 @@
       return value;
     };
 
-    var things = function(module) {
-      module = allOfTheThings[module] = {
+    var things = function(moduleName) {
+      var thingApi = allOfTheThingsApis[moduleName];
+
+      if (isDefined(thingApi))
+        return thingApi;
+
+      var module = allOfTheThings[moduleName] = {
         __incomingRoute: null,
         __activeRoute: null,
         route: {},
@@ -169,22 +180,10 @@
         boot: {}
       };
 
-      var route = function(route, value) {
-        registerDependency(module, 'route', route, value);
-
-        return module;
-      };
-
-      var service = function(service, value) {
-        registerDependency(module, 'service', service, value);
-
-        return module;
-      };
-
-      var thing = function(thing, value) {
-        registerDependency(module, 'thing', thing, value);
-
-        return module;
+      var createDependency = function(type) {
+        return function(name, value) {
+          registerDependency(module, type, name, value);
+        }
       };
 
       var goTo = function(route) {
@@ -215,10 +214,10 @@
             invokeDependency(module, bootFn, 'boot');
       };
 
-      return {
-        route: route,
-        service: service,
-        thing: thing,
+      return allOfTheThingsApis[moduleName] = {
+        route: createDependency('route'),
+        service: createDependency('service'),
+        thing: createDependency('thing'),
         goTo: goTo,
         boots: boots
       };

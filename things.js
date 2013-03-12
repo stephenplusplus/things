@@ -316,6 +316,8 @@ var things = function(moduleName) {
   };
 };
 
-  return things;
+return things;
+
 })();
+
 })(window);

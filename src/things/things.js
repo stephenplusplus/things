@@ -79,3 +79,5 @@ var things = function(moduleName) {
     boots: boots
   };
 };
+
+return things;

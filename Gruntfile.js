@@ -41,6 +41,10 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      options: {
+        mangle: true,
+        preserveComments: 'some'
+      },
       build: {
         src: 'things.js',
         dest: 'things.min.js'

@@ -1,4 +1,12 @@
-// This is the function behind all public APIs that allow type registration.
+/**
+ * The function behind all public APIs that allows dependency registration.
+ *
+ * @param  {object} module The module the dependency will be registered on.
+ * @param  {string} type   The type of dependency being registered.
+ * @param  {string} name   The name of the dependency.
+ * @param  {*}      value  The value of the dependency.
+ * @return {undefined}
+ */
 var registerDependency = function(module, type, name, value) {
   var dependency = module[type][name] = value;
 

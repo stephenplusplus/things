@@ -1,21 +1,84 @@
+/*!
+ * things. it's so thingy.
+ * @stephenplusplus
+ * github.com/stephenplusplus/things
+ */
+
 /**
- * things.
- * it's so thingy.
+ * things wrapper.
+ *
+ * @param  {object} root The global window object.
+ * @return {undefined}
  */
 (function(root) {
+'use strict';
 
-// Helper functions used throughout the library to check the various types.
-var is = function (thing, type) { return typeof thing === type; }
-  , isDefined = function(thing) { return !isUndefined(thing); }
-  , isUndefined = function(thing) { return is(thing, 'undefined'); }
-  , isFunction = function(thing) { return is(thing, 'function'); }
-  , isString = function(thing) { return is(thing, 'string'); };
+var
+/**
+ * Checks if a given "thing" is of a certain "type".
+ *
+ * @param  {*}      thing The thing you're curious about.
+ * @param  {string} type  The type you're matching the thing against.
+ * @return {boolean}
+ */
+is = function (thing, type) {
+    return typeof thing === type;
+}
 
-// `eL` is the internal jQuery-esque API to interact with the DOM element
-// matching the route.
+/**
+ * Is this thing defined?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isDefined = function(thing) {
+    return !isUndefined(thing);
+}
+
+/**
+ * Is this thing undefined?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isUndefined = function(thing) {
+    return is(thing, 'undefined');
+}
+
+/**
+ * Is this thing a function?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isFunction = function(thing) {
+    return is(thing, 'function');
+}
+
+/**
+ * Is this thing a string?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isString = function(thing) {
+    return is(thing, 'string');
+};
+
+/**
+ * Internal jQuery-esque API to interact with the DOM.
+ *
+ * @return {function} Immediately executed to privatize common functions.
+ */
 var eL = (function() {
   var forEach = Array.prototype.forEach;
 
+  /**
+   * Private find method, which uses jQuery if available.
+   *
+   * @param  {HTMLElement|string} context The context to search within.
+   * @return {function}                   The bound find function.
+   */
   var find = function(context) {
     if (isUndefined(context))
       return;
@@ -25,10 +88,23 @@ var eL = (function() {
       : context.querySelectorAll.bind(context);
   };
 
+  /**
+   * Returns the jQuery-esque API, used internally and exposed as a default
+   * dependency.
+   *
+   * @param  {string} arguments[0]
+   * @return {object} api
+   */
   return function() {
     var api = {
       matches: null,
 
+      /**
+       * Looks within the matched DOM element for another element.
+       *
+       * @param  {string} element A DOM search parameter.
+       * @return {object} api     The eL api is returned to allow chaining.
+       */
       find: function(element) {
         var context = find(api.matches[0])
           , matched;
@@ -42,6 +118,12 @@ var eL = (function() {
         return api;
       },
 
+      /**
+       * This function will update or return the innerHTML of an element.
+       *
+       * @param  {string}           newString A DOM search parameter.
+       * @return {undefined|string}
+       */
       html: function(newString) {
         if (isString(newString))
           forEach.call(api.matches, function(match) {
@@ -71,9 +153,14 @@ var
   // `alOfTheThingsApis` holds the public API for the modules.
   , allOfTheThingsApis = {};
 
-// When a route is invoked, this is called to resolve what element matches
-// the corresponding route. It is stored on the route's object itself, for
-// later usage.
+/**
+ * When a route is invoked, this resolves what element matches the corresponding
+ * route. It is stored on the route's object for later usage.
+ *
+ * @param  {object} module The module that contains the route.
+ * @param  {string} route  The name of the route we are working with.
+ * @return {undefined}
+ */
 var findRouteElements = function(module, route) {
   // If we've already found the route's element(s), let's return from this
   // function, as to not search the DOM again, unnecessarily.
@@ -89,13 +176,26 @@ var findRouteElements = function(module, route) {
   module.route[route].__datael = datael.matches[0] ? datael : dataroute;
 };
 
-// When a route is invoked, this will return the data element that matches
-// the route being invoked.
+/**
+ * When a route is invoked, return the matching element.
+ *
+ * @param  {object} module The module that contains the route.
+ * @param  {string} route  The route we are going to look for the element on.
+ * @return {eL}
+ */
 var getElForRoute = function(module, route) {
   return module.route[route].__datael;
 };
 
-// This is the function behind all public APIs that allow type registration.
+/**
+ * The function behind all public APIs that allows dependency registration.
+ *
+ * @param  {object} module The module the dependency will be registered on.
+ * @param  {string} type   The type of dependency being registered.
+ * @param  {string} name   The name of the dependency.
+ * @param  {*}      value  The value of the dependency.
+ * @return {undefined}
+ */
 var registerDependency = function(module, type, name, value) {
   var dependency = module[type][name] = value;
 
@@ -116,11 +216,19 @@ var registerDependency = function(module, type, name, value) {
     dependency.__invoked = false;
 };
 
-// When we need a depency, we start by passing in the module to search in,
-// and then as much information as we have. If all we know is the name, this
-// searches through the various types of dependencies, until a match is
-// found. We can also specify the name AND type of what we want, in which
-// case it is handed right to us.
+/**
+ * When we need a depency, we start by passing in the module to search in, and
+ * then as much information as we have. If all we know is the name, this
+ * searches through the various types of dependencies, until a match is found.
+ * We can also specify the name AND type of what we want, in which case it is
+ * handed right to us.
+ *
+ * @param  {object}           module The module from where we're searching for
+ *                                   the dependency.
+ * @param  {string}           name   The name of the dependency we need.
+ * @param  {string|undefined} type   The type of dependency we want.
+ * @return {object}           returnDependency The dependency and type matched.
+ */
 var requestDependency = function(module, name, type) {
   var returnDependency = {
     dependencyType: undefined,
@@ -151,9 +259,16 @@ var requestDependency = function(module, name, type) {
   return returnDependency;
 };
 
-// When we `goTo` a route, this function will be called to retrieve and
-// execute (if necessary) the dependencies of the route, as well as the
-// dependencies of its dependencies, and so on and so forth.
+/**
+ * When we "goTo" a route, we retrieve and execute (if necessary) the
+ * dependencies of the route, as well as the dependencies of its dependencies,
+ * and so on and so forth.
+ *
+ * @param  {object} module The module containing the dependencies.
+ * @param  {string} name   The dependency we are trying to recieve.
+ * @param  {string} type   The type of dependency we want.
+ * @return {*}      value  The value of the dependency can be anything!
+ */
 var invokeDependency = function(module, name, type) {
   var
   // Let's start by grabbing the dependency that we're looking for.
@@ -231,12 +346,20 @@ var invokeDependency = function(module, name, type) {
   return value;
 };
 
-// We will add things to the global object.
+/**
+ * We will add things to the global object.
+ *
+ * @return {function}
+ */
 root.things = (function() {
 
-// The public API to create a new thing module and register other things.
+/**
+ * The public API to create a new thing module and register other things.
+ *
+ * @param  {string} moduleName The name of the thing module being requested.
+ * @return {object}            The api to interact with the thing module.
+ */
 var things = function(moduleName) {
-
   // `thingApi` is what will be returned to the user when a thing module is
   // created / asked for.
   var thingApi = allOfTheThingsApis[moduleName];
@@ -261,15 +384,32 @@ var things = function(moduleName) {
     boot: {}
   };
 
-  // This function returns a function bound to the correct dependency type.
+  /**
+   * Returns a function bound to the correct dependency type.
+   *
+   * @param  {string} type What kind of dependency are we going to eventually
+   *                       register?
+   * @return {function}    The returned function will call registerDependency.
+   */
   var createDependency = function(type) {
+    /**
+     * The function that is returned which will call registerDependency.
+     *
+     * @param  {string} name  The name of the thing being registered.
+     * @param  {*}      value What is the value of this thing?
+     * @return {undefined}
+     */
     return function(name, value) {
       registerDependency(module, type, name, value);
     }
   };
 
-  // `goTo` is what is used to "go to" a route. First, we must find the
-  // route's elements, then we can invoke the route function.
+  /**
+   * What is used to "go to" a route.
+   *
+   * @param  {string} route  Name of the route we're invoking.
+   * @return {object} module The object used for interacting with the module.
+   */
   var goTo = function(route) {
     findRouteElements(module, route);
     invokeDependency(module, route, 'route');
@@ -277,9 +417,17 @@ var things = function(moduleName) {
     return module;
   };
 
-  // `boots` registers functions that intend to be invoked after the DOM has
-  // finished loading.
+  /**
+   * Registers functions that intend to be invoked after the DOM is ready.
+   *
+   * @param  {function}         value  The function that will execute.
+   * @return {object|undefined} module The object used for interacting with the
+   *                                   module.
+   */
   var boots = function(value) {
+    if (!isFunction(value))
+        return;
+
     registerDependency(module, 'boot', value.toString().substr(10, 30).replace(/[^\w]|\s/g, ''), value);
 
     return module;
@@ -297,8 +445,12 @@ var things = function(moduleName) {
   // The default `eL` dependency, the jQuery-esque API for the DOM.
   registerDependency(module, 'thing', 'eL', eL);
 
-  // When the DOM has loaded, we can call our `module.boots()` functions
-  // one-by-one.
+  /**
+   * When the DOM has loaded, we can call our `module.boots()` functions
+   * one-by-one.
+   *
+   * @return {undefined}
+   */
   root.onload = function() {
     for (var bootFn in module.boot)
       if (module.boot.hasOwnProperty(bootFn))

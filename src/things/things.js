@@ -1,6 +1,10 @@
-// The public API to create a new thing module and register other things.
+/**
+ * The public API to create a new thing module and register other things.
+ *
+ * @param  {string} moduleName The name of the thing module being requested.
+ * @return {object}            The api to interact with the thing module.
+ */
 var things = function(moduleName) {
-
   // `thingApi` is what will be returned to the user when a thing module is
   // created / asked for.
   var thingApi = allOfTheThingsApis[moduleName];
@@ -25,15 +29,32 @@ var things = function(moduleName) {
     boot: {}
   };
 
-  // This function returns a function bound to the correct dependency type.
+  /**
+   * Returns a function bound to the correct dependency type.
+   *
+   * @param  {string} type What kind of dependency are we going to eventually
+   *                       register?
+   * @return {function}    The returned function will call registerDependency.
+   */
   var createDependency = function(type) {
+    /**
+     * The function that is returned which will call registerDependency.
+     *
+     * @param  {string} name  The name of the thing being registered.
+     * @param  {*}      value What is the value of this thing?
+     * @return {undefined}
+     */
     return function(name, value) {
       registerDependency(module, type, name, value);
     }
   };
 
-  // `goTo` is what is used to "go to" a route. First, we must find the
-  // route's elements, then we can invoke the route function.
+  /**
+   * What is used to "go to" a route.
+   *
+   * @param  {string} route  Name of the route we're invoking.
+   * @return {object} module The object used for interacting with the module.
+   */
   var goTo = function(route) {
     findRouteElements(module, route);
     invokeDependency(module, route, 'route');
@@ -41,9 +62,17 @@ var things = function(moduleName) {
     return module;
   };
 
-  // `boots` registers functions that intend to be invoked after the DOM has
-  // finished loading.
+  /**
+   * Registers functions that intend to be invoked after the DOM is ready.
+   *
+   * @param  {function}         value  The function that will execute.
+   * @return {object|undefined} module The object used for interacting with the
+   *                                   module.
+   */
   var boots = function(value) {
+    if (!isFunction(value))
+        return;
+
     registerDependency(module, 'boot', value.toString().substr(10, 30).replace(/[^\w]|\s/g, ''), value);
 
     return module;
@@ -61,8 +90,12 @@ var things = function(moduleName) {
   // The default `eL` dependency, the jQuery-esque API for the DOM.
   registerDependency(module, 'thing', 'eL', eL);
 
-  // When the DOM has loaded, we can call our `module.boots()` functions
-  // one-by-one.
+  /**
+   * When the DOM has loaded, we can call our `module.boots()` functions
+   * one-by-one.
+   *
+   * @return {undefined}
+   */
   root.onload = function() {
     for (var bootFn in module.boot)
       if (module.boot.hasOwnProperty(bootFn))

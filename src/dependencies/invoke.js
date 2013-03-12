@@ -1,6 +1,13 @@
-// When we `goTo` a route, this function will be called to retrieve and
-// execute (if necessary) the dependencies of the route, as well as the
-// dependencies of its dependencies, and so on and so forth.
+/**
+ * When we "goTo" a route, we retrieve and execute (if necessary) the
+ * dependencies of the route, as well as the dependencies of its dependencies,
+ * and so on and so forth.
+ *
+ * @param  {object} module The module containing the dependencies.
+ * @param  {string} name   The dependency we are trying to recieve.
+ * @param  {string} type   The type of dependency we want.
+ * @return {*}      value  The value of the dependency can be anything!
+ */
 var invokeDependency = function(module, name, type) {
   var
   // Let's start by grabbing the dependency that we're looking for.

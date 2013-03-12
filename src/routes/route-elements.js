@@ -1,6 +1,11 @@
-// When a route is invoked, this is called to resolve what element matches
-// the corresponding route. It is stored on the route's object itself, for
-// later usage.
+/**
+ * When a route is invoked, this resolves what element matches the corresponding
+ * route. It is stored on the route's object for later usage.
+ *
+ * @param  {object} module The module that contains the route.
+ * @param  {string} route  The name of the route we are working with.
+ * @return {undefined}
+ */
 var findRouteElements = function(module, route) {
   // If we've already found the route's element(s), let's return from this
   // function, as to not search the DOM again, unnecessarily.
@@ -16,8 +21,13 @@ var findRouteElements = function(module, route) {
   module.route[route].__datael = datael.matches[0] ? datael : dataroute;
 };
 
-// When a route is invoked, this will return the data element that matches
-// the route being invoked.
+/**
+ * When a route is invoked, return the matching element.
+ *
+ * @param  {object} module The module that contains the route.
+ * @param  {string} route  The route we are going to look for the element on.
+ * @return {eL}
+ */
 var getElForRoute = function(module, route) {
   return module.route[route].__datael;
 };

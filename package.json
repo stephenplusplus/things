@@ -1,0 +1,10 @@
+{
+  "name": "things",
+  "version": "0.0.1",
+  "author": "Stephen Sawchuk",
+  "dependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-uglify": "~0.1.2",
+    "grunt-contrib-concat": "~0.1.3"
+  }
+}

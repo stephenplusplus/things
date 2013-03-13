@@ -63,7 +63,19 @@ is = function (thing, type) {
  */
 , isString = function(thing) {
     return is(thing, 'string');
+}
+
+/**
+ * Is this thing an array?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isArray = function(thing) {
+    return is(thing, 'object') && isDefined(thing.length);
 };
+
+
 
 /**
  * Internal jQuery/jQuery-esque API to interact with the DOM.
@@ -120,18 +132,17 @@ var $$ = (function($) {
       /**
        * This function will update or return the innerHTML of an element.
        *
-       * @param  {string}           newString A DOM search parameter.
-       * @return {undefined|string}
+       * @param  {*|undefined} newContent A DOM search parameter.
+       * @return {string|undefined}
        */
-      html: function(newString) {
-        if (isString(newString))
-          forEach.call(api.matches, function(match) {
-            if (isString(newString))
-              return match.innerHTML = newString;
-          });
-
-        if (isUndefined(newString))
+      html: function(newContent) {
+        if (isUndefined(newContent))
           return api.matches[0].innerHTML;
+
+        if (!isFunction(newContent) && !isArray(newContent))
+          forEach.call(api.matches, function(match) {
+            return match.innerHTML = newContent;
+          });
       }
     };
 
@@ -140,7 +151,7 @@ var $$ = (function($) {
       return $(arguments[0]);
 
     // jQuery isn't around, so we'll have to use our fallback.
-    api.matches = finder(root.document.body)(arguments[0]);
+    api.matches = finder(root.document)(arguments[0]);
     return api;
   }
 })(root.jQuery);
@@ -433,7 +444,7 @@ var things = function(moduleName) {
    */
   var boots = function(value) {
     if (!isFunction(value))
-        return;
+      return;
 
     registerDependency(module, 'boot', value.toString().substr(10, 30).replace(/[^\w]|\s/g, ''), value);
 
@@ -450,7 +461,9 @@ var things = function(moduleName) {
   });
 
   // The default `$` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'thing', '$', $$);
+  registerDependency(module, 'service', '$', function() {
+    return $$;
+  });
 
   // For routes, we provide a special `$el` to reference the route's element.
   registerDependency(module, 'thing', '$el', $$);

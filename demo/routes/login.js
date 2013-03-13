@@ -1,7 +1,7 @@
-things('myApp').route('/login', function(User, eL) {
+things('myApp').route('/login', function(User, $el) {
   User.logIn('stephen');
 
   if (User.isLoggedIn()) {
-    eL.html('Thanks for logging in! You\'ll be re-directed momentarily.');
+    $el.html('Thanks for logging in! You\'ll be re-directed momentarily.');
   }
 });

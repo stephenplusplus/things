@@ -98,9 +98,9 @@
   // ### Route: /
   // The first parameter to a `route` is the "path" to your app. This route
   // will be our homepage.
-  things('myApp').route('/', function(User, eL) {
-    // We're asking for `User` and `eL`. Remember that `User` is the `service`
-    // we created earlier. `eL` is something new.
+  things('myApp').route('/', function(User, $el) {
+    // We're asking for `User` and `$el`. Remember that `User` is the `service`
+    // we created earlier. `$el` is something new.
     //
     // Each `route` should also match an element in your HTML markup. These
     // routes are identified by a custom, `[data-route]` data attribute.
@@ -109,11 +109,11 @@
     //
     //     <section data-route="/"></section>
     //
-    // So, what `eL` gives us, is access to that DOM element, wrapped with some
+    // So, what `$el` gives us, is access to that DOM element, wrapped with some
     // extra functionality. We use that here to update the innerHTML of the
     // above element.
     if (!User.isLoggedIn()) {
-      eL.html('Ha! You\'re not logged in.');
+      $el.html('Ha! You\'re not logged in.');
     }
   });
 
@@ -126,17 +126,17 @@
   //         <input placeholder="username, please.">
   //         <button>Submit</button>
   //       </form>
-  //       <div data-eL></div>
+  //       <div data-el></div>
   //     </section>
   //
-  // We've added something new here. You can create an element with a `data-eL`
+  // We've added something new here. You can create an element with a `data-el`
   // data attribute, and in turn, this is what will be injected when asked for
-  // `eL`.
-  things('myApp').route('/login', function(User, eL) {
+  // `$el`.
+  things('myApp').route('/login', function(User, $el) {
     User.logIn('stephen');
 
     if (User.isLoggedIn()) {
-      eL.html('Thanks for logging in! You\'ll be re-directed momentarily.');
+      $el.html('Thanks for logging in! You\'ll be re-directed momentarily.');
     }
   });
 
@@ -158,8 +158,8 @@
   // `/usa` is probably the most useful page ever created. We will request that
   // `States` `thing` we created earlier (an array), and turn it into a lovely
   // paragraph.
-  things('myApp').route('/usa', function(eL, States) {
-    eL.html(States.join(', '));
+  things('myApp').route('/usa', function($el, States) {
+    $el.html(States.join(', '));
   });
 
   // # Boots.

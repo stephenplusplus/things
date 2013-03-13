@@ -1,3 +1,3 @@
-things('myApp').route('/usa', function(eL, States) {
-  eL.html(States.join(', '));
+things('myApp').route('/usa', function($el, States) {
+  $el.html(States.join(', '));
 });

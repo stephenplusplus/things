@@ -77,8 +77,8 @@ a function.</p>             </td>             <td class="code">               <d
 when you or your user asks to <code>goTo</code> it.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>Route: /</h3>
 
 <p>The first parameter to a <code>route</code> is the "path" to your app. This route
-will be our homepage.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="nx">eL</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>We're asking for <code>User</code> and <code>eL</code>. Remember that <code>User</code> is the <code>service</code>
-we created earlier. <code>eL</code> is something new.</p>
+will be our homepage.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="nx">$el</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>We're asking for <code>User</code> and <code>$el</code>. Remember that <code>User</code> is the <code>service</code>
+we created earlier. <code>$el</code> is something new.</p>
 
 <p>Each <code>route</code> should also match an element in your HTML markup. These
 routes are identified by a custom, <code>[data-route]</code> data attribute.</p>
@@ -88,10 +88,10 @@ routes are identified by a custom, <code>[data-route]</code> data attribute.</p>
 <pre><code>&lt;section data-route="/"&gt;&lt;/section&gt;
 </code></pre>
 
-<p>So, what <code>eL</code> gives us, is access to that DOM element, wrapped with some
+<p>So, what <code>$el</code> gives us, is access to that DOM element, wrapped with some
 extra functionality. We use that here to update the innerHTML of the
 above element.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">User</span><span class="p">.</span><span class="nx">isLoggedIn</span><span class="p">())</span> <span class="p">{</span>
-      <span class="nx">eL</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;Ha! You\&#39;re not logged in.&#39;</span><span class="p">);</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;Ha! You\&#39;re not logged in.&#39;</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>Route: /login</h3>
 
@@ -103,17 +103,17 @@ The <code>/login</code> element from index.html looks like this:</p>
     &lt;input placeholder="username, please."&gt;
     &lt;button&gt;Submit&lt;/button&gt;
   &lt;/form&gt;
-  &lt;div data-eL&gt;&lt;/div&gt;
+  &lt;div data-el&gt;&lt;/div&gt;
 &lt;/section&gt;
 </code></pre>
 
-<p>We've added something new here. You can create an element with a <code>data-eL</code>
+<p>We've added something new here. You can create an element with a <code>data-el</code>
 data attribute, and in turn, this is what will be injected when asked for
-<code>eL</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="nx">eL</span><span class="p">)</span> <span class="p">{</span>
+<code>$el</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="nx">$el</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">User</span><span class="p">.</span><span class="nx">logIn</span><span class="p">(</span><span class="s1">&#39;stephen&#39;</span><span class="p">);</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">User</span><span class="p">.</span><span class="nx">isLoggedIn</span><span class="p">())</span> <span class="p">{</span>
-      <span class="nx">eL</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;Thanks for logging in! You\&#39;ll be re-directed momentarily.&#39;</span><span class="p">);</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;Thanks for logging in! You\&#39;ll be re-directed momentarily.&#39;</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Route: /logout</h3>
 
@@ -131,8 +131,8 @@ move your user around throughout your app.</p>             </td>             <td
 
 <p><code>/usa</code> is probably the most useful page ever created. We will request that
 <code>States</code> <code>thing</code> we created earlier (an array), and turn it into a lovely
-paragraph.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/usa&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">eL</span><span class="p">,</span> <span class="nx">States</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">eL</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">States</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">));</span>
+paragraph.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">things</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">).</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/usa&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$el</span><span class="p">,</span> <span class="nx">States</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">States</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">));</span>
   <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h1>Boots.</h1>
 
 <p>Pass a function to <code>boots</code> that will execute when the document has finished
@@ -153,4 +153,4 @@ object.</p>             </td>             <td class="code">               <div c
   <span class="p">});</span>
 <span class="p">})();</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html>

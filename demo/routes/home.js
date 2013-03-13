@@ -1,5 +1,5 @@
-things('myApp').route('/', function(User, eL) {
+things('myApp').route('/', function(User, $el) {
   if (!User.isLoggedIn()) {
-    eL.html('Ha! You\'re not logged in.');
+    $el.html('Ha! You\'re not logged in.');
   }
 });

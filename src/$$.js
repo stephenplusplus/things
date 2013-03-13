@@ -35,7 +35,7 @@ var $$ = (function($) {
        * Looks within the matched DOM element for another element.
        *
        * @param  {string} element A DOM search parameter.
-       * @return {object} api     The eL api is returned to allow chaining.
+       * @return {object} api     The $$ api is returned to allow chaining.
        */
       find: function(element) {
         var context = finder(api.matches[0])

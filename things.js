@@ -66,26 +66,25 @@ is = function (thing, type) {
 };
 
 /**
- * Internal jQuery-esque API to interact with the DOM.
+ * Internal jQuery/jQuery-esque API to interact with the DOM.
  *
- * @return {function} Immediately executed to privatize common functions.
+ * @return {jQuery|function} Immediately executed to privatize common functions.
  */
-var eL = (function() {
+var $$ = (function($) {
+  var jQueryPresent = isFunction($);
+
+  // Let's save this, so we can loop over matches.
   var forEach = Array.prototype.forEach;
 
   /**
    * Private find method, which uses jQuery if available.
    *
    * @param  {HTMLElement|string} context The context to search within.
-   * @return {function}                   The bound find function.
+   * @return {function|undefined}         The bound find function.
    */
-  var find = function(context) {
-    if (isUndefined(context))
-      return;
-
-    return root.jQuery
-      ? root.jQuery(context).find.bind(root.jQuery(context))
-      : context.querySelectorAll.bind(context);
+  var finder = function(context) {
+    if (isDefined(context))
+      return context.querySelectorAll.bind(context);
   };
 
   /**
@@ -93,7 +92,7 @@ var eL = (function() {
    * dependency.
    *
    * @param  {string} arguments[0]
-   * @return {object} api
+   * @return {object}
    */
   return function() {
     var api = {
@@ -106,7 +105,7 @@ var eL = (function() {
        * @return {object} api     The eL api is returned to allow chaining.
        */
       find: function(element) {
-        var context = find(api.matches[0])
+        var context = finder(api.matches[0])
           , matched;
 
         if (isFunction(context))
@@ -136,11 +135,15 @@ var eL = (function() {
       }
     };
 
-    api.matches = find(root.document.body)(arguments[0]);
+    if (jQueryPresent)
+      // We have jQuery, so we will use that, straight up!
+      return $(arguments[0]);
 
+    // jQuery isn't around, so we'll have to use our fallback.
+    api.matches = finder(root.document.body)(arguments[0]);
     return api;
   }
-})();
+})(root.jQuery);
 
 var
   // These are the different types of dependencies that can be registered.
@@ -167,13 +170,17 @@ var findRouteElements = function(module, route) {
   if (isDefined(module.route[route].__datael))
     return;
 
-  // If we haven't already found them, this will use our internal `eL` to
+  // If we haven't already found them, this will use our internal `$$` to
   // locate the matching elements.
-  var dataroute = eL('[data-route="'+ route +'"]')
-    , datael = dataroute.find('[data-eL]');
+  var dataroute = $$('[data-route="'+ route +'"]')
+    , datael = dataroute.find('[data-el]');
 
   module.route[route].__dataroute = dataroute;
-  module.route[route].__datael = datael.matches[0] ? datael : dataroute;
+
+  module.route[route].__datael =
+    isDefined(datael[0])
+      ? datael
+      : dataroute;
 };
 
 /**
@@ -181,7 +188,7 @@ var findRouteElements = function(module, route) {
  *
  * @param  {object} module The module that contains the route.
  * @param  {string} route  The route we are going to look for the element on.
- * @return {eL}
+ * @return {$$}
  */
 var getElForRoute = function(module, route) {
   return module.route[route].__datael;
@@ -217,8 +224,8 @@ var registerDependency = function(module, type, name, value) {
 };
 
 /**
- * When we need a depency, we start by passing in the module to search in, and
- * then as much information as we have. If all we know is the name, this
+ * When we need a dependency, we start by passing in the module to search in,
+ * and then as much information as we have. If all we know is the name, this
  * searches through the various types of dependencies, until a match is found.
  * We can also specify the name AND type of what we want, in which case it is
  * handed right to us.
@@ -295,7 +302,7 @@ var invokeDependency = function(module, name, type) {
 
   // We're asking for `eL` and we're switching routes. We'll set the value
   // to the correct `eL` element that matches the incoming route.
-  if (name === 'eL' && module.__incomingRoute !== module.__activeRoute)
+  if (name === '$el' && module.__incomingRoute !== module.__activeRoute)
     value = getElForRoute(module, module.__incomingRoute);
 
   // This is where the instantiating of our functions comes in.
@@ -442,8 +449,11 @@ var things = function(moduleName) {
     return goTo;
   });
 
-  // The default `eL` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'thing', 'eL', eL);
+  // The default `$` dependency, the jQuery-esque API for the DOM.
+  registerDependency(module, 'thing', '$', $$);
+
+  // For routes, we provide a special `$el` to reference the route's element.
+  registerDependency(module, 'thing', '$el', $$);
 
   /**
    * When the DOM has loaded, we can call our `module.boots()` functions

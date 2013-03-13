@@ -1,24 +1,23 @@
 /**
- * Internal jQuery-esque API to interact with the DOM.
+ * Internal jQuery/jQuery-esque API to interact with the DOM.
  *
- * @return {function} Immediately executed to privatize common functions.
+ * @return {jQuery|function} Immediately executed to privatize common functions.
  */
-var eL = (function() {
+var $$ = (function($) {
+  var jQueryPresent = isFunction($);
+
+  // Let's save this, so we can loop over matches.
   var forEach = Array.prototype.forEach;
 
   /**
    * Private find method, which uses jQuery if available.
    *
    * @param  {HTMLElement|string} context The context to search within.
-   * @return {function}                   The bound find function.
+   * @return {function|undefined}         The bound find function.
    */
-  var find = function(context) {
-    if (isUndefined(context))
-      return;
-
-    return root.jQuery
-      ? root.jQuery(context).find.bind(root.jQuery(context))
-      : context.querySelectorAll.bind(context);
+  var finder = function(context) {
+    if (isDefined(context))
+      return context.querySelectorAll.bind(context);
   };
 
   /**
@@ -26,7 +25,7 @@ var eL = (function() {
    * dependency.
    *
    * @param  {string} arguments[0]
-   * @return {object} api
+   * @return {object}
    */
   return function() {
     var api = {
@@ -39,7 +38,7 @@ var eL = (function() {
        * @return {object} api     The eL api is returned to allow chaining.
        */
       find: function(element) {
-        var context = find(api.matches[0])
+        var context = finder(api.matches[0])
           , matched;
 
         if (isFunction(context))
@@ -69,8 +68,12 @@ var eL = (function() {
       }
     };
 
-    api.matches = find(root.document.body)(arguments[0]);
+    if (jQueryPresent)
+      // We have jQuery, so we will use that, straight up!
+      return $(arguments[0]);
 
+    // jQuery isn't around, so we'll have to use our fallback.
+    api.matches = finder(root.document.body)(arguments[0]);
     return api;
   }
-})();
+})(root.jQuery);

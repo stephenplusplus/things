@@ -12,13 +12,17 @@ var findRouteElements = function(module, route) {
   if (isDefined(module.route[route].__datael))
     return;
 
-  // If we haven't already found them, this will use our internal `eL` to
+  // If we haven't already found them, this will use our internal `$$` to
   // locate the matching elements.
-  var dataroute = eL('[data-route="'+ route +'"]')
-    , datael = dataroute.find('[data-eL]');
+  var dataroute = $$('[data-route="'+ route +'"]')
+    , datael = dataroute.find('[data-el]');
 
   module.route[route].__dataroute = dataroute;
-  module.route[route].__datael = datael.matches[0] ? datael : dataroute;
+
+  module.route[route].__datael =
+    isDefined(datael[0])
+      ? datael
+      : dataroute;
 };
 
 /**
@@ -26,7 +30,7 @@ var findRouteElements = function(module, route) {
  *
  * @param  {object} module The module that contains the route.
  * @param  {string} route  The route we are going to look for the element on.
- * @return {eL}
+ * @return {$$}
  */
 var getElForRoute = function(module, route) {
   return module.route[route].__datael;

@@ -87,8 +87,11 @@ var things = function(moduleName) {
     return goTo;
   });
 
-  // The default `eL` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'thing', 'eL', eL);
+  // The default `$` dependency, the jQuery-esque API for the DOM.
+  registerDependency(module, 'thing', '$', $$);
+
+  // For routes, we provide a special `$el` to reference the route's element.
+  registerDependency(module, 'thing', '$el', $$);
 
   /**
    * When the DOM has loaded, we can call our `module.boots()` functions

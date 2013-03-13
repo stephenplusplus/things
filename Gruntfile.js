@@ -6,7 +6,7 @@ var srcFiles = [
   'src/helpers.js',
 
   // jQuery-esque DOM api.
-  'src/eL.js',
+  'src/$$.js',
 
   // thing globals.
   'src/things-globals.js',

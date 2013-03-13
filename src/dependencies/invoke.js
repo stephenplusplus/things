@@ -34,7 +34,7 @@ var invokeDependency = function(module, name, type) {
 
   // We're asking for `eL` and we're switching routes. We'll set the value
   // to the correct `eL` element that matches the incoming route.
-  if (name === 'eL' && module.__incomingRoute !== module.__activeRoute)
+  if (name === '$el' && module.__incomingRoute !== module.__activeRoute)
     value = getElForRoute(module, module.__incomingRoute);
 
   // This is where the instantiating of our functions comes in.

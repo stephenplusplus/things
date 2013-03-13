@@ -53,18 +53,17 @@ var $$ = (function($) {
       /**
        * This function will update or return the innerHTML of an element.
        *
-       * @param  {string}           newString A DOM search parameter.
-       * @return {undefined|string}
+       * @param  {*|undefined} newContent A DOM search parameter.
+       * @return {string|undefined}
        */
-      html: function(newString) {
-        if (isString(newString))
-          forEach.call(api.matches, function(match) {
-            if (isString(newString))
-              return match.innerHTML = newString;
-          });
-
-        if (isUndefined(newString))
+      html: function(newContent) {
+        if (isUndefined(newContent))
           return api.matches[0].innerHTML;
+
+        if (!isFunction(newContent) && !isArray(newContent))
+          forEach.call(api.matches, function(match) {
+            return match.innerHTML = newContent;
+          });
       }
     };
 
@@ -73,7 +72,7 @@ var $$ = (function($) {
       return $(arguments[0]);
 
     // jQuery isn't around, so we'll have to use our fallback.
-    api.matches = finder(root.document.body)(arguments[0]);
+    api.matches = finder(root.document)(arguments[0]);
     return api;
   }
 })(root.jQuery);

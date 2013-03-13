@@ -71,7 +71,7 @@ var things = function(moduleName) {
    */
   var boots = function(value) {
     if (!isFunction(value))
-        return;
+      return;
 
     registerDependency(module, 'boot', value.toString().substr(10, 30).replace(/[^\w]|\s/g, ''), value);
 
@@ -88,7 +88,9 @@ var things = function(moduleName) {
   });
 
   // The default `$` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'thing', '$', $$);
+  registerDependency(module, 'service', '$', function() {
+    return $$;
+  });
 
   // For routes, we provide a special `$el` to reference the route's element.
   registerDependency(module, 'thing', '$el', $$);

@@ -48,4 +48,16 @@ is = function (thing, type) {
  */
 , isString = function(thing) {
     return is(thing, 'string');
+}
+
+/**
+ * Is this thing an array?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+, isArray = function(thing) {
+    return is(thing, 'object') && isDefined(thing.length);
 };
+
+

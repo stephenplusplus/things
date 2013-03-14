@@ -46,6 +46,8 @@ var things = function(moduleName) {
      */
     return function(name, value) {
       registerDependency(module, type, name, value);
+
+      return allOfTheThingsApis[moduleName];
     }
   };
 
@@ -59,7 +61,7 @@ var things = function(moduleName) {
     findRouteElements(module, route);
     invokeDependency(module, route, 'route');
 
-    return module;
+    return allOfTheThingsApis[moduleName];
   };
 
   /**
@@ -73,9 +75,16 @@ var things = function(moduleName) {
     if (!isFunction(value))
       return;
 
-    registerDependency(module, 'boot', value.toString().substr(10, 30).replace(/[^\w]|\s/g, ''), value);
+    // Create a random name for this boot function.
+    var bootName = value.toString().substr(10, 30).replace(/[^\w]|\s/g, '');
 
-    return module;
+    registerDependency(module, 'boot', bootName, value);
+
+    if (isDOMLoaded)
+      // If the DOM has already loaded, we'll invoke this immediately.
+      invokeDependency(module, bootName, 'boot');
+
+    return allOfTheThingsApis[moduleName];
   };
 
   // The default `root` dependency, which is just a refence to `window`.
@@ -101,11 +110,14 @@ var things = function(moduleName) {
    *
    * @return {undefined}
    */
+  var isDOMLoaded = document.readyState === 'complete';
   root.onload = function() {
+    isDOMLoaded = true;
+
     for (var bootFn in module.boot)
       if (module.boot.hasOwnProperty(bootFn))
         invokeDependency(module, bootFn, 'boot');
-  };
+   };
 
   // We return the public API for registering things, as well as store a
   // reference to it in `allOfTheThingsApis`.

@@ -1,6 +1,6 @@
 var srcFiles = [
   // source header.
-  'src/things-src-begins.js',
+  'src/src-begins.js',
 
   // helper functions.
   'src/helpers.js',
@@ -9,7 +9,7 @@ var srcFiles = [
   'src/$$.js',
 
   // thing globals.
-  'src/things-globals.js',
+  'src/globals.js',
 
   // route-related functions.
   'src/routes/route-elements.js',
@@ -25,7 +25,7 @@ var srcFiles = [
   'src/things/things-ends.js',
 
   // source footer.
-  'src/things-src-ends.js'
+  'src/src-ends.js'
 ];
 
 module.exports = function(grunt) {

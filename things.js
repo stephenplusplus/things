@@ -215,7 +215,7 @@ var getElForRoute = function(module, route) {
  * @return {undefined}
  */
 var registerDependency = function(module, type, name, value) {
-  if (type === 'service' && !isFunction(value) && isUndefined(value.constructor.__invoked))
+  if (type === 'service' && !isFunction(value) && isUndefined(module.service[name].__invoked))
     // If the dependency is a service that has not yet been invoked, we're more
     // picky about what the service type can be.
     throw new Error('Services must be functions!');
@@ -233,7 +233,7 @@ var registerDependency = function(module, type, name, value) {
         : [];
   }
 
-  if (type === 'service' && isUndefined(value.constructor.__invoked))
+  if (type === 'service' && isUndefined(module.service[name].__invoked))
     // If the dependency is a service, we will specifiy that it has not yet
     // been invoked.
     value.__invoked = false;

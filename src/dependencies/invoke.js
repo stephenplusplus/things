@@ -15,7 +15,7 @@ var invokeDependency = function(module, name, type) {
 
   // Did we find a dependency? Let's see if it has any dependencies of its
   // own.
-  , dependencies = value? value.__dependencies : []
+  , dependencies = value? module[type][name].__dependencies : []
 
   // Are we trying to fire up a route?
   , route = type === 'route'
@@ -23,7 +23,7 @@ var invokeDependency = function(module, name, type) {
   // Is it a service? ...
   , service = type === 'service'
   // ... and if so, has it been invoked?
-  , invoked = service && value.__invoked
+  , invoked = service && module.service[name].__invoked
 
   // Ok, we're asking for a thing.
   , thing = type === 'thing';

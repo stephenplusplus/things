@@ -14,6 +14,9 @@
 'use strict';
 
 var
+// Save a copy of toString to abuse.
+__toString = ({}).toString,
+
 /**
  * Checks if a given "thing" is of a certain "type".
  *
@@ -22,8 +25,8 @@ var
  * @return {boolean}
  */
 is = function (thing, type) {
-    return typeof thing === type;
-}
+  return typeof thing === type;
+},
 
 /**
  * Is this thing defined?
@@ -31,9 +34,9 @@ is = function (thing, type) {
  * @param  {*} thing The thing you're curious about.
  * @return {boolean}
  */
-, isDefined = function(thing) {
-    return !isUndefined(thing);
-}
+isDefined = function(thing) {
+  return !isUndefined(thing);
+},
 
 /**
  * Is this thing undefined?
@@ -41,9 +44,9 @@ is = function (thing, type) {
  * @param  {*} thing The thing you're curious about.
  * @return {boolean}
  */
-, isUndefined = function(thing) {
-    return is(thing, 'undefined');
-}
+isUndefined = function(thing) {
+  return __toString.call(thing) === '[object Undefined]';
+},
 
 /**
  * Is this thing a function?
@@ -51,9 +54,9 @@ is = function (thing, type) {
  * @param  {*} thing The thing you're curious about.
  * @return {boolean}
  */
-, isFunction = function(thing) {
-    return is(thing, 'function');
-}
+isFunction = function(thing) {
+  return __toString.call(thing) === '[object Function]';
+},
 
 /**
  * Is this thing a string?
@@ -61,9 +64,9 @@ is = function (thing, type) {
  * @param  {*} thing The thing you're curious about.
  * @return {boolean}
  */
-, isString = function(thing) {
-    return is(thing, 'string');
-}
+isString = function(thing) {
+  return __toString.call(thing) === '[object String]';
+},
 
 /**
  * Is this thing an array?
@@ -71,8 +74,8 @@ is = function (thing, type) {
  * @param  {*} thing The thing you're curious about.
  * @return {boolean}
  */
-, isArray = function(thing) {
-    return is(thing, 'object') && isDefined(thing.length);
+isArray = function(thing) {
+  return __toString.call(thing) === '[object Array]';
 };
 
 

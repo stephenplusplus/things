@@ -31,6 +31,8 @@ var srcFiles = [
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.initConfig({
     concat: {
@@ -49,9 +51,26 @@ module.exports = function(grunt) {
         src: 'things.js',
         dest: 'things.min.js'
       }
+    },
+
+    watch: {
+      src: {
+        files: ['src/**/*.js', 'test-compiled/**/*.js'],
+        tasks: ['concat:build', 'test']
+      }
+    },
+
+    shell: {
+      test: {
+        command: 'phantomjs lib/phantom-jasmine/run_jasmine_test.coffee test-compiled/runner.html',
+        options: {
+          stdout: true
+        }
+      }
     }
   });
 
-  grunt.registerTask('build', ['concat:build', 'uglify:build']);
+  grunt.registerTask('test', 'shell:test');
+  grunt.registerTask('build', ['concat:build', 'shell:test', 'uglify:build']);
   grunt.registerTask('default', ['build']);
 };

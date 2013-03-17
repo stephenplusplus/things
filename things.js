@@ -1,6 +1,6 @@
 /*!
 * things. it's so thingy.
-* v0.0.1 @stephenplusplus 3/16/13
+* v0.0.1 @stephenplusplus 3/17/13
 * github.com/stephenplusplus/things
 */
 
@@ -83,7 +83,7 @@ isArray = function(thing) {
 /**
  * Internal jQuery/jQuery-esque API to interact with the DOM.
  *
- * @return {jQuery|function} Immediately executed to privatize common functions.
+ * @return {function} Immediately executed to privatize common functions.
  */
 var $$ = (function($) {
   var jQueryPresent = isFunction($);
@@ -160,15 +160,15 @@ var $$ = (function($) {
 })(root.jQuery);
 
 var
-  // These are the different types of dependencies that can be registered.
-  dependencyTypes = ['route', 'service', 'thing']
+// These are the different types of dependencies that can be registered.
+dependencyTypes = ['route', 'service', 'thing'],
 
-  // `allOfTheThings` holds the things attached to each module that we pass
-  // around within the library (routes, services, etc).
-  , allOfTheThings = {}
+// `allOfTheThings` holds the things attached to each module that we pass
+// around within the library (routes, services, etc).
+allOfTheThings = {},
 
-  // `alOfTheThingsApis` holds the public API for the modules.
-  , allOfTheThingsApis = {};
+// `alOfTheThingsApis` holds the public API for the modules.
+allOfTheThingsApis = {};
 
 /**
  * When a route is invoked, this resolves what element matches the corresponding

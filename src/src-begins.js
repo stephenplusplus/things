@@ -1,9 +1,3 @@
-/*!
- * things. it's so thingy.
- * @stephenplusplus
- * github.com/stephenplusplus/things
- */
-
 /**
  * things wrapper.
  *

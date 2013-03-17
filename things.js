@@ -1,8 +1,8 @@
 /*!
- * things. it's so thingy.
- * @stephenplusplus
- * github.com/stephenplusplus/things
- */
+* things. it's so thingy.
+* v0.0.1 @stephenplusplus 3/16/13
+* github.com/stephenplusplus/things
+*/
 
 /**
  * things wrapper.

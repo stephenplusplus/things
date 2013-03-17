@@ -35,7 +35,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
 
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+
     concat: {
+      options: {
+        banner:
+          "/*!\n"
+          +"* things. it's so thingy.\n"
+          +"* v<%= pkg.version %> @stephenplusplus <%= grunt.template.today('m/d/yy') %>\n"
+          +"* github.com/stephenplusplus/things\n"
+          +"*/\n\n"
+      },
       build: {
         src: srcFiles,
         dest: 'things.js'

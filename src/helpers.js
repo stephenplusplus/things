@@ -30,7 +30,7 @@ isDefined = function(thing) {
  * @return {boolean}
  */
 isUndefined = function(thing) {
-  return __toString.call(thing) === '[object Undefined]';
+  return is(thing, 'undefined');
 },
 
 /**

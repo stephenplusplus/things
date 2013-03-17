@@ -1,7 +1,7 @@
 /**
  * Internal jQuery/jQuery-esque API to interact with the DOM.
  *
- * @return {jQuery|function} Immediately executed to privatize common functions.
+ * @return {function} Immediately executed to privatize common functions.
  */
 var $$ = (function($) {
   var jQueryPresent = isFunction($);

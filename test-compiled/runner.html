@@ -1,17 +1,23 @@
-<!doctype>
+<!doctype html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Jasmine Spec Runner</title>
-
   <link rel="shortcut icon" type="image/png" href="../lib/jasmine-1.3.1/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="../lib/jasmine-1.3.1/jasmine.css">
-  <script type="text/javascript" src="../lib/jasmine-1.3.1/jasmine.js"></script>
-  <script type="text/javascript" src="../lib/jasmine-1.3.1/jasmine-html.js"></script>
+</head>
+<body>
+  <script src="../lib/jasmine-1.3.1/jasmine.js"></script>
+  <script src="../lib/jasmine-1.3.1/jasmine-html.js"></script>
+  <script src="../lib/phantom-jasmine/console-runner.js"></script>
+  <script>
+    var console_reporter = window.console_reporter = new jasmine.ConsoleReporter();
+    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+    jasmine.getEnv().addReporter(console_reporter);
+  </script>
 
-  <!-- include source files here... -->
   <script src="../things.js"></script>
 
-  <!-- include spec files here... -->
   <script src="helpers.js"></script>
   <script src="things.js"></script>
   <script src="things-things.js"></script>
@@ -19,35 +25,6 @@
   <script src="things-routes.js"></script>
   <script src="things-boots.js"></script>
 
-  <script type="text/javascript">
-    (function() {
-      var jasmineEnv = jasmine.getEnv();
-      jasmineEnv.updateInterval = 1000;
-
-      var htmlReporter = new jasmine.HtmlReporter();
-
-      jasmineEnv.addReporter(htmlReporter);
-
-      jasmineEnv.specFilter = function(spec) {
-        return htmlReporter.specFilter(spec);
-      };
-
-      var currentWindowOnload = window.onload;
-
-      window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
-        }
-        execJasmine();
-      };
-
-      function execJasmine() {
-        jasmineEnv.execute();
-      }
-    })();
-  </script>
-
-</head>
-<body>
+  <script>jasmine.getEnv().execute();</script>
 </body>
 </html>

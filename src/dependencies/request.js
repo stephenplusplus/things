@@ -17,7 +17,7 @@ var requestDependency = function(module, name, type) {
     dependency: undefined
   };
 
-  if (!isDefined(name) && !isDefined(type))
+  if (isUndefined(name) && isUndefined(type))
     // Nothing provided to us! Abort!
     return returnDependency;
 

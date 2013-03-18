@@ -26,4 +26,18 @@ describe('routes', function() {
 
     expect(routeWithDepCalled).toBeTruthy();
   });
+
+  it('should return an error message if a route is a dependency', function() {
+    var routeInjected;
+
+    module
+      .route('fakeRoute', function() {})
+      .route('fakeRouteThatRequiresRoute', function(fakeRoute) {
+        routeInjected = typeof fakeRoute === 'function';
+      })
+      .route('fakeRouteThatRequiresFakeRouteThatRequiresRoute', function(fakeRouteThatRequiresRoute) {})
+      .goTo('fakeRouteThatRequiresFakeRouteThatRequiresRoute');
+
+    expect(routeInjected).toBeFalsy();
+  });
 });

@@ -86,4 +86,18 @@ describe('services', function() {
 
     expect(fakeDepServiceFunctionCalled).toEqual(1);
   });
+
+  it('should return an error message if a route is a dependency', function() {
+    var routeInjected;
+
+    module
+      .route('fakeRoute', function() {})
+      .service('fakeServiceThatRequiresRoute', function(fakeRoute) {
+        routeInjected = typeof fakeRoute === 'function';
+      })
+      .route('fakeRouteThatRequiresServiceThatRequiresRoute', function(fakeServiceThatRequiresRoute) {})
+      .goTo('fakeRouteThatRequiresServiceThatRequiresRoute');
+
+    expect(routeInjected).toBeFalsy();
+  });
 });

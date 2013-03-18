@@ -70,4 +70,18 @@ describe('things', function() {
 
     expect(fakeDepThingFunctionCalled).toEqual(3);
   });
+
+  it('should return an error message if a route is a dependency', function() {
+    var routeInjected;
+
+    module
+      .route('fakeRoute', function() {})
+      .thing('fakeThingThatRequiresRoute', function(fakeRoute) {
+        routeInjected = typeof fakeRoute === 'function';
+      })
+      .route('fakeRouteThatRequiresFakeThingThatRequiresRoute', function(fakeThingThatRequiresRoute) {})
+      .goTo('fakeRouteThatRequiresFakeThingThatRequiresRoute');
+
+    expect(routeInjected).toBeFalsy();
+  });
 });

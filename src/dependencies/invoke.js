@@ -11,30 +11,37 @@
 var invokeDependency = function(module, name, type) {
   var
   // Let's start by grabbing the dependency that we're looking for.
-  value = requestDependency(module, name, type).dependency
+  value = requestDependency(module, name, type).dependency,
 
   // Did we find a dependency? Let's see if it has any dependencies of its
   // own.
-  , dependencies = value? module[type][name].__dependencies : []
+  dependencies = value? module[type][name].__dependencies : [],
 
   // Are we trying to fire up a route?
-  , route = type === 'route'
+  route = type === 'route',
+  // Are we switching routes?
+  routeIsSwitching = module.__incomingRoute !== module.__activeRoute,
 
   // Is it a service? ...
-  , service = type === 'service'
+  service = type === 'service',
   // ... and if so, has it been invoked?
-  , invoked = service && module.service[name].__invoked
+  invoked = service && module.service[name].__invoked,
 
   // Ok, we're asking for a thing.
-  , thing = type === 'thing';
+  thing = type === 'thing';
 
-  // We are firing up a route, so let's store its name on our module.
-  if (route)
+  if (route) {
+    if (routeIsSwitching)
+      // If a route isn't yet active, we can't inject a route.
+      return 'Routes cannot be dependencies, sorry!';
+
+    // We are firing up a route, so let's store its name on our module.
     module.__incomingRoute = name;
+  }
 
-  // We're asking for `$$` and we're switching routes. We'll set the value
-  // to the correct `$$` element that matches the incoming route.
-  if (name === '$el' && module.__incomingRoute !== module.__activeRoute)
+  // We're asking for `$$` and we're switching routes. We'll set the value to
+  // the correct `$$` element that matches the incoming route.
+  if (route && name === '$el')
     value = getElForRoute(module, module.__incomingRoute);
 
   // This is where the instantiating of our functions comes in.

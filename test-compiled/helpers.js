@@ -23,13 +23,13 @@ if (!Function.prototype.bind) {
 }
 
 // good ol' noop.
-var noop = function() {};
+noop = function() {};
 
 // thing holders!
-var module = things('module');
+module = things('module');
 
 // fake dependencies.
-var fakes = {
+fakes = {
   fakeDepArray: [1, 2, 3],
   fakeDepNumber: 1,
   fakeDepObject: { objects: 'work!' },

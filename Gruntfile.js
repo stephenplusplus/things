@@ -32,7 +32,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -52,9 +52,18 @@ module.exports = function(grunt) {
       }
     },
 
+    jasmine: {
+      compiled: {
+        src: ['things.js', 'test-compiled/helpers.js'],
+        options: {
+          specs: 'test-compiled/**/*.js'
+        }
+      }
+    },
+
     uglify: {
       options: {
-        mangle: true,
+        compress: true,
         preserveComments: 'some'
       },
       build: {
@@ -66,21 +75,12 @@ module.exports = function(grunt) {
     watch: {
       src: {
         files: ['src/**/*.js', 'test-compiled/**/*.js'],
-        tasks: ['concat:build', 'test']
-      }
-    },
-
-    shell: {
-      test: {
-        command: 'phantomjs lib/phantom-jasmine/run_jasmine_test.coffee test-compiled/runner.html',
-        options: {
-          stdout: true
-        }
+        tasks: ['concat:build', 'jasmine:compiled']
       }
     }
   });
 
-  grunt.registerTask('test', 'shell:test');
-  grunt.registerTask('build', ['concat:build', 'shell:test', 'uglify:build']);
+  grunt.registerTask('test', 'jasmine:compiled');
+  grunt.registerTask('build', ['concat:build', 'jasmine:compiled', 'uglify:build']);
   grunt.registerTask('default', ['build']);
 };

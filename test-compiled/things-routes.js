@@ -6,11 +6,13 @@ describe('routes', function() {
       routeNoDepCalled = true;
     });
 
-    module.route('/route-with-dep', function(fakeDepArray) {
-      if (fakeDepArray === fakes.fakeDepArray) {
-        routeWithDepCalled = true;
-      }
-    });
+    module
+      .thing('fakeDepArray', fakes.fakeDepArray)
+      .route('/route-with-dep', function(fakeDepArray) {
+        if (fakeDepArray === fakes.fakeDepArray) {
+          routeWithDepCalled = true;
+        }
+      });
   });
 
   it('should execute route with no dependencies', function() {

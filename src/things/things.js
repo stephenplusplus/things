@@ -5,6 +5,9 @@
  * @return {object}            The api to interact with the thing module.
  */
 var things = function(moduleName) {
+  if (isUndefined(moduleName))
+    throw new Error('Hey! Name your things!');
+
   // `thingApi` is what will be returned to the user when a thing module is
   // created / asked for.
   var thingApi = allOfTheThingsApis[moduleName];

@@ -10,7 +10,7 @@ describe('services', function() {
         })
         .goTo('/fake-dep-service-array');
     } catch(e) {
-      fakeDepServiceArrayReturned = !e.message === 'Services must be functions!';
+      fakeDepServiceArrayReturned = false;
     }
 
     expect(fakeDepServiceArrayReturned).toBeFalsy();
@@ -27,7 +27,7 @@ describe('services', function() {
         })
         .goTo('/fake-dep-service-number');
     } catch(e) {
-      fakeDepServiceNumberReturned = !e.message === 'Services must be functions!';
+      fakeDepServiceArrayReturned = false;
     }
 
     expect(fakeDepServiceNumberReturned).toBeFalsy();
@@ -44,7 +44,7 @@ describe('services', function() {
         })
         .goTo('/fake-dep-service-object');
     } catch(e) {
-      fakeDepServiceObjectReturned = !e.message === 'Services must be functions!';
+      fakeDepServiceArrayReturned = false;
     }
 
     expect(fakeDepServiceObjectReturned).toBeFalsy();
@@ -61,7 +61,7 @@ describe('services', function() {
         })
         .goTo('/fake-dep-service-function');
     } catch(e) {
-      fakeDepServiceFunctionReturned = !e.message === 'Services must be functions!';
+      fakeDepServiceArrayReturned = false;
     }
 
     expect(fakeDepServiceFunctionReturned).toBeTruthy();

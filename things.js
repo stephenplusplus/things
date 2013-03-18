@@ -1,6 +1,6 @@
 /*!
 * things. it's so thingy.
-* v0.0.1 @stephenplusplus 3/17/13
+* v0.0.1 @stephenplusplus 3/18/13
 * github.com/stephenplusplus/things
 */
 
@@ -386,6 +386,9 @@ root.things = (function() {
  * @return {object}            The api to interact with the thing module.
  */
 var things = function(moduleName) {
+  if (isUndefined(moduleName))
+    throw new Error('Hey! Name your things!');
+
   // `thingApi` is what will be returned to the user when a thing module is
   // created / asked for.
   var thingApi = allOfTheThingsApis[moduleName];

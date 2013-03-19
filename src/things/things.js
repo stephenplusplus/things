@@ -24,6 +24,7 @@ var things = function(moduleName) {
   // be passing this module directly to all dependency register and
   // invocation functions.
   var module = allOfTheThings[moduleName] = {
+    __invokingFilter: null,
     __incomingRoute: null,
     __activeRoute: null,
     route: {},
@@ -31,6 +32,26 @@ var things = function(moduleName) {
     thing: {},
     boot: {}
   };
+
+  // Prepare the invoking filter to be stored on the module.
+  invokingFilter(module);
+
+  // The default `root` dependency, which is just a refence to `window`.
+  registerDependency(module, 'thing', 'root', window);
+
+  // Another default `goTo` function, which just returns the `goTo`
+  // function defined above.
+  registerDependency(module, 'service', 'goTo', function() {
+    return goTo;
+  });
+
+  // The default `$` dependency, the jQuery-esque API for the DOM.
+  registerDependency(module, 'service', '$', function() {
+    return $$;
+  });
+
+  // For routes, we provide a special `$el` to reference the route's element.
+  registerDependency(module, 'thing', '$el', $$);
 
   /**
    * Returns a function bound to the correct dependency type.
@@ -61,8 +82,7 @@ var things = function(moduleName) {
    * @return {object} module The object used for interacting with the module.
    */
   var goTo = function(route) {
-    findRouteElements(module, route);
-    invokeDependency(module, route, 'route');
+    invokeRoute(module, route);
 
     return allOfTheThingsApis[moduleName];
   };
@@ -90,23 +110,6 @@ var things = function(moduleName) {
     return allOfTheThingsApis[moduleName];
   };
 
-  // The default `root` dependency, which is just a refence to `window`.
-  registerDependency(module, 'thing', 'root', window);
-
-  // Another default `goTo` function, which just returns the `goTo`
-  // function defined above.
-  registerDependency(module, 'service', 'goTo', function() {
-    return goTo;
-  });
-
-  // The default `$` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'service', '$', function() {
-    return $$;
-  });
-
-  // For routes, we provide a special `$el` to reference the route's element.
-  registerDependency(module, 'thing', '$el', $$);
-
   /**
    * When the DOM has loaded, we can call our `module.boots()` functions
    * one-by-one.
@@ -117,9 +120,9 @@ var things = function(moduleName) {
   root.onload = function() {
     isDOMLoaded = true;
 
-    for (var bootFn in module.boot)
-      if (module.boot.hasOwnProperty(bootFn))
-        invokeDependency(module, bootFn, 'boot');
+    for (var bootName in module.boot)
+      if (module.boot.hasOwnProperty(bootName))
+        invokeDependency(module, bootName, 'boot');
    };
 
   // We return the public API for registering things, as well as store a

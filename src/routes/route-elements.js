@@ -7,13 +7,7 @@
  * @return {undefined}
  */
 var findRouteElements = function(module, route) {
-  // If we've already found the route's element(s), let's return from this
-  // function, as to not search the DOM again, unnecessarily.
-  if (isDefined(module.route[route].__datael))
-    return;
-
-  // If we haven't already found them, this will use our internal `$$` to
-  // locate the matching elements.
+  // We will use our internal `$$` to locate the matching elements.
   var dataroute = $$('[data-route="'+ route +'"]')
     , datael = dataroute.find('[data-el]');
 
@@ -33,5 +27,7 @@ var findRouteElements = function(module, route) {
  * @return {$$}
  */
 var getElForRoute = function(module, route) {
+  findRouteElements(module, route);
+
   return module.route[route].__datael;
 };

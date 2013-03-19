@@ -1,6 +1,6 @@
 /*!
 * things. it's so thingy.
-* v0.0.1 @stephenplusplus 3/18/13
+* v0.0.1 @stephenplusplus 3/19/13
 * github.com/stephenplusplus/things
 */
 
@@ -179,13 +179,7 @@ allOfTheThingsApis = {};
  * @return {undefined}
  */
 var findRouteElements = function(module, route) {
-  // If we've already found the route's element(s), let's return from this
-  // function, as to not search the DOM again, unnecessarily.
-  if (isDefined(module.route[route].__datael))
-    return;
-
-  // If we haven't already found them, this will use our internal `$$` to
-  // locate the matching elements.
+  // We will use our internal `$$` to locate the matching elements.
   var dataroute = $$('[data-route="'+ route +'"]')
     , datael = dataroute.find('[data-el]');
 
@@ -205,7 +199,31 @@ var findRouteElements = function(module, route) {
  * @return {$$}
  */
 var getElForRoute = function(module, route) {
+  findRouteElements(module, route);
+
   return module.route[route].__datael;
+};
+
+/**
+ * When we "goTo" a route, we retrieve and execute (if necessary) the
+ * dependencies of the route, as well as the dependencies of its dependencies,
+ * and so on and so forth.
+ *
+ * @param  {object}    module The module containing the dependencies.
+ * @param  {string}    route  The name of the route we are about to `goTo`.
+ * @return {undefined}
+ */
+var invokeRoute = function(module, route) {
+  // We are firing up a route, so let's store its name on our module.
+  module.__incomingRoute = route;
+
+  // We begin the search for dependencies!
+  module.__requestingType = 'route';
+  invokeDependency(module, route, 'route');
+
+  // If we've made it here, we have switched from a previous route successfully.
+  // We will update the `__activeRoute` property on the module.
+  module.__activeRoute = route;
 };
 
 /**
@@ -218,15 +236,17 @@ var getElForRoute = function(module, route) {
  * @return {undefined}
  */
 var registerDependency = function(module, type, name, value) {
-  if (type === 'service' && !isFunction(value) && isUndefined(module.service[name].__invoked))
+  if (type === 'service'
+    && !isFunction(value)
+    && isUndefined(module.service[name].__invoked))
     // If the dependency is a service that has not yet been invoked, we're more
     // picky about what the service type can be.
     throw new Error('Services must be functions!');
 
   var dependency = module[type][name] = value;
 
-  // If the dependency is a function, we strip out the dependencies listed
-  // in it's signature.
+  // If the dependency is a function, we strip out the dependencies listed in
+  // it's signature.
   if (isFunction(value)) {
     var dependencies = value.toString().match(/^\s*function\s*\((.*?)\)/);
 
@@ -286,97 +306,198 @@ var requestDependency = function(module, name, type) {
 };
 
 /**
- * When we "goTo" a route, we retrieve and execute (if necessary) the
- * dependencies of the route, as well as the dependencies of its dependencies,
- * and so on and so forth.
+ * Let's invoke a dependency!
  *
  * @param  {object} module The module containing the dependencies.
- * @param  {string} name   The dependency we are trying to recieve.
+ * @param  {string} name   The dependency we are trying to receive.
  * @param  {string} type   The type of dependency we want.
  * @return {*}      value  The value of the dependency can be anything!
  */
 var invokeDependency = function(module, name, type) {
+  if (isUndefined(name) || isUndefined(type))
+    return undefined;
+
   var
-  // Let's start by grabbing the dependency that we're looking for.
-  value = requestDependency(module, name, type).dependency,
+  // Wire up our invokingFilter, used throughout the life of this function.
+  filter = module.__invokingFilter(name, type),
 
-  // Did we find a dependency? Let's see if it has any dependencies of its
-  // own.
-  dependencies = value? module[type][name].__dependencies : [],
+  // Sniff out any dependencies this dependency may have.
+  dependencies = module[type][name].__dependencies;
 
-  // Are we trying to fire up a route?
-  route = type === 'route',
-  // Are we switching routes?
-  routeIsSwitching = module.__incomingRoute !== module.__activeRoute,
+  // Using our `invokingFilter`, we get our initial value of the dependency.
+  var value = filter.preInstantiation();
 
-  // Is it a service? ...
-  service = type === 'service',
-  // ... and if so, has it been invoked?
-  invoked = service && module.service[name].__invoked,
+  if (isArray(dependencies))
+    // Update the `requestingType` to store the dependency asking for the next
+    // dependencies.
+    module.__requestingType = type;
 
-  // Ok, we're asking for a thing.
-  thing = type === 'thing';
+  if (isFunction(value) && !module[type][name].__invoked)
+    // If the value is a function, but not a service that's been invoked, this
+    // will take the first 10 dependencies listed and pass them into a `new`'d
+    // value().
+    value = new value(
+      invokeDependency(module, dependencies[0], requestDependency(module, dependencies[0]).dependencyType),
+      invokeDependency(module, dependencies[1], requestDependency(module, dependencies[1]).dependencyType),
+      invokeDependency(module, dependencies[2], requestDependency(module, dependencies[2]).dependencyType),
+      invokeDependency(module, dependencies[3], requestDependency(module, dependencies[3]).dependencyType),
+      invokeDependency(module, dependencies[4], requestDependency(module, dependencies[4]).dependencyType),
+      invokeDependency(module, dependencies[5], requestDependency(module, dependencies[5]).dependencyType),
+      invokeDependency(module, dependencies[6], requestDependency(module, dependencies[6]).dependencyType),
+      invokeDependency(module, dependencies[7], requestDependency(module, dependencies[7]).dependencyType),
+      invokeDependency(module, dependencies[8], requestDependency(module, dependencies[8]).dependencyType),
+      invokeDependency(module, dependencies[9], requestDependency(module, dependencies[9]).dependencyType)
+    );
 
-  if (route) {
-    if (routeIsSwitching)
-      // If a route isn't yet active, we can't inject a route.
-      return 'Routes cannot be dependencies, sorry!';
+  // The value of the dependency might stay the same as it is currently in the
+  // invokation, or it might need some additional processing. We'll run it
+  // through the filter one last time to determine its final value, then return
+  // that value.
+  return filter.postInstantiation(value);
+};
 
-    // We are firing up a route, so let's store its name on our module.
-    module.__incomingRoute = name;
-  }
+/**
+ * When we're in the process of launching a new route, we'll need to manage a
+ * lot of dependencies. Some have conditions which must be met before being
+ * invoked. Others need to keep track of their "active" or "invoked" state and
+ * subsequently re-registered.
+ *
+ * @param  {object}    module The module where our route's dependencies will be
+ *                            matched.
+ * @param  {string}    route  The name of the route we are going to launch.
+ * @return {undefined}
+ */
+var invokingFilter = function(module) {
+  // `preInstantiation` functions are passed the name and current value of the
+  // dependency being requested. All functions must return a value that will
+  // represent the dependency for the duration of the invokation.
+  var preInstantiation = {
+    /**
+     * Boot functions typically don't requre filtering. However, should we need
+     * to, we have the option.
+     *
+     * @this   {object} The name and value of the route being requested.
+     * @return {*}      The value of the dependency being requested.
+     */
+    boot: function() {
+      return this.value;
+    },
 
-  // We're asking for `$$` and we're switching routes. We'll set the value to
-  // the correct `$$` element that matches the incoming route.
-  if (route && name === '$el')
-    value = getElForRoute(module, module.__incomingRoute);
+    /**
+     * If a route is being requested, we need to be sure it's the route we're
+     * trying to launch, and not another route listed as a dependency.
+     *
+     * @this   {object} The name and value of the route being requested.
+     * @return {*}      The value of the dependency being requested.
+     */
+    route: function() {
+      if (this.name !== module.__incomingRoute)
+        // If a route isn't yet active, someone is asking for a route. Bust 'em!
+        this.value = 'Routes cannot be dependencies, sorry!';
 
-  // This is where the instantiating of our functions comes in.
-  theInvoking: {
+      return this.value;
+    },
 
-    // Is the value being asked for a function?
-    if (isFunction(value)) {
+    /**
+     * A service is being requested as a dependency.
+     *
+     * @this   {object} The name and value of the service being requested.
+     * @return {*}      The value of the dependency being requested.
+     */
+    service: function() {
+      return this.value;
+    },
 
-      // Is the function being requested a service that has been invoked? If
-      // so, we will not re-invoke it, and instead hand it back as-is.
-      if (invoked)
-        break theInvoking;
+    /**
+     * A thing is being requested as a dependency.
+     *
+     * @this   {object} The name and value of the thing being requested.
+     * @return {*}      The value of the dependency being requested.
+     */
+    thing: function() {
+      if (this.name === '$el'
+        && module.__requestingType === 'route'
+        && module.__incomingRoute !== module.__activeRoute)
+        this.value = getElForRoute(module, module.__incomingRoute);
 
-      // The value is not a service that's been invoked, but is a function
-      // which has its own dependencies. This will take the first 10 listed
-      // and pass them into a `new`'d value();
-      value = new value(
-        invokeDependency(module, dependencies[0], requestDependency(module, dependencies[0]).dependencyType),
-        invokeDependency(module, dependencies[1], requestDependency(module, dependencies[1]).dependencyType),
-        invokeDependency(module, dependencies[2], requestDependency(module, dependencies[2]).dependencyType),
-        invokeDependency(module, dependencies[3], requestDependency(module, dependencies[3]).dependencyType),
-        invokeDependency(module, dependencies[4], requestDependency(module, dependencies[4]).dependencyType),
-        invokeDependency(module, dependencies[5], requestDependency(module, dependencies[5]).dependencyType),
-        invokeDependency(module, dependencies[6], requestDependency(module, dependencies[6]).dependencyType),
-        invokeDependency(module, dependencies[7], requestDependency(module, dependencies[7]).dependencyType),
-        invokeDependency(module, dependencies[8], requestDependency(module, dependencies[8]).dependencyType),
-        invokeDependency(module, dependencies[9], requestDependency(module, dependencies[9]).dependencyType)
-      );
-
-      // If the value is a service and we've gotten to here, we will switch
-      // the `__invoked` property to true, so that we don't instantiate it
-      // again later. We also update the dependency in the module to reflect
-      // its returned value.
-      if (service) {
-        registerDependency(module, 'service', name, value);
-        module.service[name].__invoked = true;
-      }
+      return this.value;
     }
-  }
+  };
 
-  // If the dependency is a route and we've made it here, we have switched
-  // from a previous route successfully. We will update the `__activeRoute`
-  // property on the module.
-  if (route)
-    module.__activeRoute = name;
+  // `postInstantiation` functions are passed the name and current value of the
+  // dependency being requested. All functions must return a value that will
+  // represent the dependency for the duration of the invokation.
+  var postInstantiation = {
+    /**
+     * A boot is being requested as a dependency.
+     *
+     * @param  {*} value The value of the route being requested.
+     * @return {*}       The value of the dependency being requested.
+     */
+    boot: function(value) {
+      return value;
+    },
 
-  // The value of the dependency is returned.
-  return value;
+    /**
+     * A route is being requested as a dependency.
+     *
+     * @param  {*} value The value of the route being requested.
+     * @return {*}       The value of the dependency being requested.
+     */
+    route: function(value) {
+      return value;
+    },
+
+    /**
+     * A service is being requested as a dependency.
+     *
+     * @param  {*} value The value of the service being requested.
+     * @return {*}       The value of the dependency being requested.
+     */
+    service: function(value) {
+      // Update the dependency in the module to store its returned value.
+      registerDependency(module, 'service', this.name, value);
+
+      // Switch the `__invoked` property to true, so that we don't instantiate
+      // it again later.
+      module.service[this.name].__invoked = true;
+
+      return value;
+    },
+
+    /**
+     * A thing is being requested as a dependency.
+     *
+     * @param  {*} value The value of the thing being requested.
+     * @return {*}       The value of the dependency being requested.
+     */
+    thing: function(value) {
+      return value;
+    }
+  };
+
+  /**
+   * `__invokingFilter` is stored on the module, and used during
+   * `invokeDependency` to lint or process a dependency before instantiation and
+   * after.
+   *
+   * @param  {string} name The name of the dependency being requested.
+   * @param  {string} type The type of dependency being requested.
+   * @return {object}      The pre and postInstantiation methods to process
+   *                       the dependency injection before and after
+   *                       instantiation.
+   */
+  module.__invokingFilter = function(name, type) {
+    var data = {
+      name: name,
+      value: requestDependency(module, name, type).dependency
+    };
+
+    return {
+      preInstantiation: preInstantiation[type].bind(data),
+      postInstantiation: postInstantiation[type].bind(data)
+    };
+  };
 };
 
 /**
@@ -412,6 +533,7 @@ var things = function(moduleName) {
   // be passing this module directly to all dependency register and
   // invocation functions.
   var module = allOfTheThings[moduleName] = {
+    __invokingFilter: null,
     __incomingRoute: null,
     __activeRoute: null,
     route: {},
@@ -419,6 +541,26 @@ var things = function(moduleName) {
     thing: {},
     boot: {}
   };
+
+  // Prepare the invoking filter to be stored on the module.
+  invokingFilter(module);
+
+  // The default `root` dependency, which is just a refence to `window`.
+  registerDependency(module, 'thing', 'root', window);
+
+  // Another default `goTo` function, which just returns the `goTo`
+  // function defined above.
+  registerDependency(module, 'service', 'goTo', function() {
+    return goTo;
+  });
+
+  // The default `$` dependency, the jQuery-esque API for the DOM.
+  registerDependency(module, 'service', '$', function() {
+    return $$;
+  });
+
+  // For routes, we provide a special `$el` to reference the route's element.
+  registerDependency(module, 'thing', '$el', $$);
 
   /**
    * Returns a function bound to the correct dependency type.
@@ -449,8 +591,7 @@ var things = function(moduleName) {
    * @return {object} module The object used for interacting with the module.
    */
   var goTo = function(route) {
-    findRouteElements(module, route);
-    invokeDependency(module, route, 'route');
+    invokeRoute(module, route);
 
     return allOfTheThingsApis[moduleName];
   };
@@ -478,23 +619,6 @@ var things = function(moduleName) {
     return allOfTheThingsApis[moduleName];
   };
 
-  // The default `root` dependency, which is just a refence to `window`.
-  registerDependency(module, 'thing', 'root', window);
-
-  // Another default `goTo` function, which just returns the `goTo`
-  // function defined above.
-  registerDependency(module, 'service', 'goTo', function() {
-    return goTo;
-  });
-
-  // The default `$` dependency, the jQuery-esque API for the DOM.
-  registerDependency(module, 'service', '$', function() {
-    return $$;
-  });
-
-  // For routes, we provide a special `$el` to reference the route's element.
-  registerDependency(module, 'thing', '$el', $$);
-
   /**
    * When the DOM has loaded, we can call our `module.boots()` functions
    * one-by-one.
@@ -505,9 +629,9 @@ var things = function(moduleName) {
   root.onload = function() {
     isDOMLoaded = true;
 
-    for (var bootFn in module.boot)
-      if (module.boot.hasOwnProperty(bootFn))
-        invokeDependency(module, bootFn, 'boot');
+    for (var bootName in module.boot)
+      if (module.boot.hasOwnProperty(bootName))
+        invokeDependency(module, bootName, 'boot');
    };
 
   // We return the public API for registering things, as well as store a

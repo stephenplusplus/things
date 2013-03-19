@@ -13,11 +13,13 @@ var srcFiles = [
 
   // route-related functions.
   'src/routes/route-elements.js',
+  'src/routes/invoke.js',
 
   // handling dependencies within things.
   'src/dependencies/register.js',
   'src/dependencies/request.js',
   'src/dependencies/invoke.js',
+  'src/dependencies/filter.js',
 
   // public things api.
   'src/things/things-begins.js',
@@ -54,9 +56,9 @@ module.exports = function(grunt) {
 
     jasmine: {
       compiled: {
-        src: ['things.js', 'test-compiled/helpers.js'],
+        src: ['things.js', 'spec/helpers.js'],
         options: {
-          specs: 'test-compiled/**/*.js'
+          specs: 'spec/**/*.js'
         }
       }
     },

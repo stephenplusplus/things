@@ -61,6 +61,14 @@ isString = function(thing) {
  */
 isArray = function(thing) {
   return __toString.call(thing) === '[object Array]';
+},
+
+/**
+ * Is this thing a number?
+ *
+ * @param  {*} thing The thing you're curious about.
+ * @return {boolean}
+ */
+isNumber = function(thing) {
+  return __toString.call(thing) === '[object Number]';
 };
-
-

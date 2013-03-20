@@ -11,8 +11,8 @@ root.things = (function() {
    * @return {object}            The api to interact with the thing module.
    */
   var things = function(moduleName) {
-    if (isUndefined(moduleName))
-      throw new Error('Hey! Name your things!');
+    if (!isString(moduleName) && !isNumber(moduleName))
+      throw new Error('Hey! Give your things a name!');
 
     // `thingApi` is what will be returned to the user when a thing module is
     // created / asked for.
@@ -37,7 +37,7 @@ root.things = (function() {
     };
 
     // Prepare the invoking filter to be stored on the module.
-    invokingFilter(module);
+    prepareInvokingFilter(module);
 
     // The default `root` dependency, which is just a refence to `window`.
     registerDependency(module, 'thing', 'root', window);

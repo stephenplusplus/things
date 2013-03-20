@@ -9,7 +9,7 @@
  * @param  {string}    route  The name of the route we are going to launch.
  * @return {undefined}
  */
-var invokingFilter = function(module) {
+var prepareInvokingFilter = function(module) {
   // `preInstantiation` functions are passed the name and current value of the
   // dependency being requested. All functions must return a value that will
   // represent the dependency for the duration of the invokation.

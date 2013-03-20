@@ -12,10 +12,10 @@ var invokeDependency = function(module, name, type) {
 
   var
   // Wire up our invokingFilter, used throughout the life of this function.
-  filter = module.__invokingFilter(name, type),
+  filter = getModuleProperty(module, 'invokingFilter')(name, type),
 
   // Sniff out any dependencies this dependency may have.
-  dependencies = module[type][name].__dependencies;
+  dependencies = getProperty(module, type, name, 'dependencies');
 
   // Using our `invokingFilter`, we get our initial value of the dependency.
   var value = filter.preInstantiation();
@@ -23,9 +23,9 @@ var invokeDependency = function(module, name, type) {
   if (isArray(dependencies))
     // Update the `requestingType` to store the dependency asking for the next
     // dependencies.
-    module.__requestingType = type;
+    setModuleProperty(module, 'requestingType', type);
 
-  if (isFunction(value) && !module[type][name].__invoked)
+  if (isFunction(value) && !getProperty(module, type, name, 'invoked'))
     // If the value is a function, but not a service that's been invoked, this
     // will take the first 10 dependencies listed and pass them into a `new`'d
     // value().

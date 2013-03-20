@@ -12,7 +12,7 @@ var srcFiles = [
   'src/globals.js',
 
   // route-related functions.
-  'src/routes/route-elements.js',
+  'src/routes/elements.js',
   'src/routes/invoke.js',
 
   // handling dependencies within things.
@@ -21,10 +21,9 @@ var srcFiles = [
   'src/dependencies/invoke.js',
   'src/dependencies/filter.js',
 
-  // public things api.
-  'src/things/things-begins.js',
-  'src/things/things.js',
-  'src/things/things-ends.js',
+  // public module api.
+  'src/modules/properties.js',
+  'src/modules/things.js',
 
   // source footer.
   'src/src-ends.js'

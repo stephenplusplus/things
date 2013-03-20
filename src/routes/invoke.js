@@ -9,13 +9,13 @@
  */
 var invokeRoute = function(module, route) {
   // We are firing up a route, so let's store its name on our module.
-  module.__incomingRoute = route;
+  setModuleProperty(module, 'incomingRoute', route);
 
   // We begin the search for dependencies!
-  module.__requestingType = 'route';
+  setModuleProperty(module, 'requestingType', 'route');
   invokeDependency(module, route, 'route');
 
   // If we've made it here, we have switched from a previous route successfully.
-  // We will update the `__activeRoute` property on the module.
-  module.__activeRoute = route;
+  // We will update the `activeRoute` property on the module.
+  setModuleProperty(module, 'activeRoute', route);
 };

@@ -11,12 +11,12 @@ var findRouteElements = function(module, route) {
   var dataroute = $$('[data-route="'+ route +'"]')
     , datael = dataroute.find('[data-el]');
 
-  module.route[route].__dataroute = dataroute;
+  setProperty(module, 'route', route, 'dataroute', dataroute);
 
-  module.route[route].__datael =
+  setProperty(module, 'route', route, 'datael',
     isDefined(datael[0])
       ? datael
-      : dataroute;
+      : dataroute);
 };
 
 /**
@@ -29,5 +29,5 @@ var findRouteElements = function(module, route) {
 var getElForRoute = function(module, route) {
   findRouteElements(module, route);
 
-  return module.route[route].__datael;
+  return getProperty(module, 'route', route, 'datael');
 };

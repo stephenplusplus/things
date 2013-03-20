@@ -33,7 +33,7 @@ var invokingFilter = function(module) {
      * @return {*}      The value of the dependency being requested.
      */
     route: function() {
-      if (this.name !== module.__incomingRoute)
+      if (this.name !== getModuleProperty(module, 'incomingRoute'))
         // If a route isn't yet active, someone is asking for a route. Bust 'em!
         this.value = 'Routes cannot be dependencies, sorry!';
 
@@ -58,9 +58,9 @@ var invokingFilter = function(module) {
      */
     thing: function() {
       if (this.name === '$el'
-        && module.__requestingType === 'route'
-        && module.__incomingRoute !== module.__activeRoute)
-        this.value = getElForRoute(module, module.__incomingRoute);
+        && getModuleProperty(module, 'requestingType') === 'route'
+        && getModuleProperty(module, 'incomingRoute') !== getModuleProperty(module, 'activeRoute'))
+        this.value = getElForRoute(module, getModuleProperty(module, 'incomingRoute'));
 
       return this.value;
     }
@@ -100,9 +100,9 @@ var invokingFilter = function(module) {
       // Update the dependency in the module to store its returned value.
       registerDependency(module, 'service', this.name, value);
 
-      // Switch the `__invoked` property to true, so that we don't instantiate
+      // Switch the `invoked` property to true, so that we don't instantiate
       // it again later.
-      module.service[this.name].__invoked = true;
+      setProperty(module, 'service', this.name, 'invoked', true);
 
       return value;
     },
@@ -119,7 +119,7 @@ var invokingFilter = function(module) {
   };
 
   /**
-   * `__invokingFilter` is stored on the module, and used during
+   * `invokingFilter` is stored on the module, and used during
    * `invokeDependency` to lint or process a dependency before instantiation and
    * after.
    *
@@ -129,7 +129,7 @@ var invokingFilter = function(module) {
    *                       the dependency injection before and after
    *                       instantiation.
    */
-  module.__invokingFilter = function(name, type) {
+  setModuleProperty(module, 'invokingFilter', function(name, type) {
     var data = {
       name: name,
       value: requestDependency(module, name, type).dependency
@@ -139,5 +139,5 @@ var invokingFilter = function(module) {
       preInstantiation: preInstantiation[type].bind(data),
       postInstantiation: postInstantiation[type].bind(data)
     };
-  };
+  });
 };

@@ -65,7 +65,8 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         compress: true,
-        preserveComments: 'some'
+        preserveComments: 'some',
+        sourceMap: 'things.js.map'
       },
       build: {
         src: 'things.js',

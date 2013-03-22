@@ -41,11 +41,11 @@ module.exports = function(grunt) {
     concat: {
       options: {
         banner:
-          "/*!\n"
-          +"* things. it's so thingy.\n"
-          +"* v<%= pkg.version %> @stephenplusplus <%= grunt.template.today('m/d/yy') %>\n"
-          +"* github.com/stephenplusplus/things\n"
-          +"*/\n\n"
+           "/*!\n"
+          +" * things. it's so thingy.\n"
+          +" * v<%= pkg.version %> @stephenplusplus <%= grunt.template.today('m/d/yy') %>\n"
+          +" * github.com/stephenplusplus/things\n"
+          +" */\n\n"
       },
       build: {
         src: srcFiles,

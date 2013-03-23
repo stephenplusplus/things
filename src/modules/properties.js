@@ -1,5 +1,4 @@
 var
-
 /**
  * Sets a property on the internal, hidden data store for the matching thing.
  *

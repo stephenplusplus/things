@@ -1,9 +1,13 @@
-## things
+# `things.`
+###### `it's` `so` `thingy.`
 
-If you want to have some control over your JavaScript, give `things` a shot!
+#### 'tis this `things` thing?
+---
+If you want to fire up a quick app, `things` is your buddy. It forces you to write your app in a way that will allow it to grow. Even if it outgrows `things` itself.
 
-The idea is, modularize your code. Not just file dependencies, but function/array/string/THINGS! as well.
+The basic idea is: __plan your app__! Discover its dependencies. Not just file and library dependencies, but functions, objects, arrays, strings... THINGS! Tell `things` about them, and later when you need them, we'll hand them to you.
 
-This is a very rough draft of what is just a hobby project. There is a lot of room for improvement, so feel free to suggest features that are missing, or contribute some of your ideas!
+-
 
-For a nice walk-through of a pointless sample application, check out [this lovely breakdown](http://stephenplusplus.github.com/things)!
+###### [Check out this lovely breakdown](http://stephenplusplus.github.com/things) of a pointless sample application!
+###### This is a very rough draft of what is just a hobby project. There is a lot of room for improvement, so feel free to suggest and contribute features that are missing!

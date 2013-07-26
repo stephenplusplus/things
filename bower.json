@@ -4,6 +4,8 @@
   "main": "things.js",
   "ignore": [
     "**/.*",
+    "spec/",
+    "src/",
     "node_modules",
     "Gruntfile.js",
     "*.json",

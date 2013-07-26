@@ -1,0 +1,14 @@
+{
+  "name": "things",
+  "version": "0.1.0",
+  "main": "things.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "Gruntfile.js",
+    "*.json",
+    "*.map",
+    "*.md",
+    "*.min.js"
+  ]
+}
